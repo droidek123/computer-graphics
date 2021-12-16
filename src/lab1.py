@@ -26,9 +26,9 @@ def render(time):
     glClear(GL_COLOR_BUFFER_BIT)
     # create_triangle()
     # create_rectangle(-25,-25,50,50)
-    create_random_rectangle(-25, -25, 50, 50, d)
-    # create_fractal(-50, -30, 100, 60, 2)
-    # koch_snowflake(-75, 40, 75, 40,0,-90, 4)
+    # create_random_rectangle(-25, -25, 50, 50, d)
+    # create_fractal(-50, -30, 100, 60, 3)
+    koch_snowflake(-75, 40, 75, 40, 0, -90, 4)
     glFlush()
 
 
