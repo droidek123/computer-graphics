@@ -26,13 +26,13 @@ def calculate_z(u, v):
     ) * math.sin(math.pi * v)
 
 def calculate_x_torus(u,v):
-    return (5 + 2 * math.cos(2*math.pi*v)) * math.cos(2*math.pi*u)
+    return (5 + 1 * math.cos(2*math.pi*v)) * math.cos(2*math.pi*u)
 
 def calculate_y_torus(u,v):
-    return (5 + 2 * math.cos(2*math.pi*v)) * math.sin(2*math.pi*u)
+    return (5 + 1 * math.cos(2*math.pi*v)) * math.sin(2*math.pi*u)
 
 def calculate_z_torus(v):
-    return 2 * math.sin(2*math.pi*v)
+    return 1 * math.sin(2*math.pi*v)
 
 
 # Zadanie na 3.0
@@ -152,7 +152,7 @@ def egg_model_triangle_stripes(n,colors):
     glEnd()
 
 
-def torus(n):
+def torus(n,colors):
     u = [None] * n
     v = [None] * n
     last_val = 0
@@ -167,12 +167,75 @@ def torus(n):
         elif idx[2] == 1: model[idx[0]][idx[1]][idx[2]] = calculate_y_torus(u[idx[0]],v[idx[1]])
         else: model[idx[0]][idx[1]][idx[2]] = calculate_z_torus(v[idx[1]])
 
-    glColor3f(1.0, 1.0, 0.0)
-    glBegin(GL_POINTS)
-    for idx, _ in np.ndenumerate(model):
-        glVertex3f(model[idx[0]][idx[1]][0], model[idx[0]][idx[1]][1] ,model[idx[0]][idx[1]][2])
+    glBegin(GL_TRIANGLE_STRIP)
+    for i in range(n-1):
+        if i == (n-2):
+            glColor(colors[0][0])
+            glVertex3f(model[i][0][0], model[i][0][1] ,model[i][0][2])
+            glColor(colors[0+1][0])
+            glVertex3f(model[i+1][0][0], model[i+1][0][1] ,model[i+1][0][2])
+        else:
+            glColor(colors[i][0])
+            glVertex3f(model[i][0][0], model[i][0][1] ,model[i][0][2])
+            glColor(colors[i+1][0])
+            glVertex3f(model[i+1][0][0], model[i+1][0][1] ,model[i+1][0][2])
+        for j in range(1,n):
+            if i == (n-2) and j == (n - 1):
+                glColor(colors[0][j])
+                glVertex3f(model[i][j][0], model[i][j][1] ,model[i][j][2])
+                glColor(colors[0+1][j])
+                glVertex3f(model[i+1][j][0], model[i+1][j][1] ,model[i+1][j][2])
+            elif j == (n - 1):
+                glColor(colors[i][0])
+                glVertex3f(model[i][j][0], model[i][j][1] ,model[i][j][2])
+                glColor(colors[i+1][0])
+                glVertex3f(model[i+1][j][0], model[i+1][j][1] ,model[i+1][j][2])
+            else:
+                glColor(colors[i][j])
+                glVertex3f(model[i][j][0], model[i][j][1] ,model[i][j][2])
+                glColor(colors[i+1][j])
+                glVertex3f(model[i+1][j][0], model[i+1][j][1] ,model[i+1][j][2]) 
     glEnd()
 
+    for k in range(3):
+        if k % 2 == 0:
+            glRotatef(90.0, 1.0, 0.0, 0.0)
+            glRotatef(-10.0, 0.0, 0.0, 1.0)
+            glTranslatef(7.5,0.0,0.0)
+            
+        else:
+            glRotatef(270.0, 1.0, 0.0, 0.0)
+            glRotatef(10.0, 0.0, 1.0, 0.0)
+            glTranslatef(7.5,0.0,0.0)
+        glBegin(GL_TRIANGLE_STRIP)
+        for i in range(n-1):
+            if i == (n-2):
+                glColor(colors[0][0])
+                glVertex3f(model[i][0][0], model[i][0][1] ,model[i][0][2])
+                glColor(colors[0+1][0])
+                glVertex3f(model[i+1][0][0], model[i+1][0][1] ,model[i+1][0][2])
+            else:
+                glColor(colors[i][0])
+                glVertex3f(model[i][0][0], model[i][0][1] ,model[i][0][2])
+                glColor(colors[i+1][0])
+                glVertex3f(model[i+1][0][0], model[i+1][0][1] ,model[i+1][0][2])
+            for j in range(1,n):
+                if i == (n-2) and j == (n - 1):
+                    glColor(colors[0][j])
+                    glVertex3f(model[i][j][0], model[i][j][1] ,model[i][j][2])
+                    glColor(colors[0+1][j])
+                    glVertex3f(model[i+1][j][0], model[i+1][j][1] ,model[i+1][j][2])
+                elif j == (n - 1):
+                    glColor(colors[i][0])
+                    glVertex3f(model[i][j][0], model[i][j][1] ,model[i][j][2])
+                    glColor(colors[i+1][0])
+                    glVertex3f(model[i+1][j][0], model[i+1][j][1] ,model[i+1][j][2])
+                else:
+                    glColor(colors[i][j])
+                    glVertex3f(model[i][j][0], model[i][j][1] ,model[i][j][2])
+                    glColor(colors[i+1][j])
+                    glVertex3f(model[i+1][j][0], model[i+1][j][1] ,model[i+1][j][2]) 
+        glEnd()
 
 
 def startup():
@@ -211,13 +274,13 @@ def spin(angle):
 def render(time, colors):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
-    spin(time * 180 / 3.1415)
+    spin(time * 180 / (2*3.1415))
     axes()
     # egg_model_points(20)
     # egg_model_lines(20)
     # egg_model_triangles(20,colors)
     # egg_model_triangle_stripes(20,colors)
-    torus(20)
+    torus(20,colors)
     glFlush()
 
 
@@ -233,9 +296,14 @@ def update_viewport(window, width, height):
     glLoadIdentity()
 
     if width <= height:
-        glOrtho(-7.5, 7.5, -7.5 / aspect_ratio, 7.5 / aspect_ratio, 7.5, -7.5)
+        glOrtho(-25.5, 25.5, -25.5 / aspect_ratio, 25.5 / aspect_ratio, 25.5, -25.5)
     else:
-        glOrtho(-7.5 * aspect_ratio, 7.5 * aspect_ratio, -7.5, 7.5, 7.5, -7.5)
+        glOrtho(-25.5 * aspect_ratio, 25.5 * aspect_ratio, -25.5, 25.5, 25.5, -25.5)
+
+    # if width <= height:
+    #     glOrtho(-7.5, 7.5, -7.5 / aspect_ratio, 7.5 / aspect_ratio, 7.5, -7.5)
+    # else:
+    #     glOrtho(-7.5 * aspect_ratio, 7.5 * aspect_ratio, -7.5, 7.5, 7.5, -7.5)
 
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
